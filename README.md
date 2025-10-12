@@ -143,11 +143,15 @@ project. When the assistant responds directly to a user it introduces itself as 
    pip install -r requirements.txt
    ```
 
-3. Configure environment variables. The Django project reads standard Django settings plus the following:
+3. Configure environment variables. The Django project reads standard Django settings plus the following security-related
+   options:
 
    ```bash
    export OPENAI_API_KEY="sk-..."
    export OPENAI_MODEL="gpt-4.1-mini"  # Optional, defaults to gpt-4.1-mini
+   export AI_ASSISTANT_API_KEY="generate-a-long-random-value"  # Required for authenticated requests
+   export DJANGO_SECRET_KEY="set-a-unique-secret-key"
+   export DJANGO_ALLOWED_HOSTS="127.0.0.1,localhost"  # Comma-separated list of hosts in production
    ```
 
 4. Apply database migrations:
@@ -167,7 +171,7 @@ The API will be available at `http://127.0.0.1:8000/api/`.
 ### API Overview
 
 - `POST /api/chat/`: Sends a message to the AI assistant. The assistant will decide whether to respond directly, manage
-  documents, or read project files. Example payload:
+  documents, or read project files. Provide the API key using the `X-API-Key` header. Example payload:
 
   ```json
   {
@@ -185,6 +189,19 @@ The API will be available at `http://127.0.0.1:8000/api/`.
   - `GET /api/documents/{id}/`
   - `PATCH /api/documents/{id}/`
   - `DELETE /api/documents/{id}/`
+
+### Security posture
+
+- All API endpoints require a valid API key sent via the `X-API-Key` header. Configure the value through the
+  `AI_ASSISTANT_API_KEY` environment variable and store it securely.
+- Sensitive defaults such as `DEBUG=False`, HTTPS redirects, secure cookies, strict host validation, and HSTS are
+  enforced automatically for production deployments.
+- Chat messages, history length, and file reads are constrained to prevent prompt injection abuse and large file
+  exfiltration. Only whitelisted file extensions under the configured repository path can be accessed, and responses from
+  OpenAI must conform to the expected JSON schema before being executed.
+- Requests to chat and document endpoints are rate limited (`20/minute` for chat and `60/minute` for document CRUD) to
+  reduce brute-force and denial-of-service attempts. Override limits with the `AI_ASSISTANT_CHAT_RATE` and
+  `AI_ASSISTANT_DOCUMENT_RATE` environment variables when necessary.
 
 ### Running Tests
 

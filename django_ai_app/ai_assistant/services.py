@@ -45,7 +45,13 @@ class AICommandRouter:
 
     def __init__(self, *, file_root: Optional[str] = None) -> None:
         self.file_root = Path(file_root or settings.AI_ASSISTANT_SETTINGS["FILE_ROOT"]).resolve()
+        if not self.file_root.exists():
+            raise RuntimeError(f"Configured file root does not exist: {self.file_root}")
+        if not self.file_root.is_dir():
+            raise RuntimeError("Configured file root must be a directory.")
         self.allowed_extensions = settings.AI_ASSISTANT_SETTINGS["ALLOWED_EXTENSIONS"]
+        self.max_file_size = settings.AI_ASSISTANT_SETTINGS["MAX_FILE_SIZE_BYTES"]
+        self.max_message_length = settings.AI_ASSISTANT_SETTINGS["MAX_MESSAGE_LENGTH"]
 
     def _client(self) -> OpenAI:
         if OpenAI is None:
@@ -59,7 +65,8 @@ class AICommandRouter:
     def build_messages(self, user_message: str, history: Optional[Iterable[Dict[str, str]]] = None) -> List[Dict[str, str]]:
         messages: List[Dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
         if history:
-            messages.extend(history)
+            trimmed_history = list(history)[-20:]
+            messages.extend(trimmed_history)
         messages.append({"role": "user", "content": user_message})
         return messages
 
@@ -71,14 +78,33 @@ class AICommandRouter:
             response_format={"type": "json_object"},
         )
         raw_text = response.output[0].content[0].text  # type: ignore[index]
-        return json.loads(raw_text)
+        try:
+            parsed = json.loads(raw_text)
+        except json.JSONDecodeError as exc:
+            raise ValueError("OpenAI response was not valid JSON.") from exc
+        if not isinstance(parsed, dict):
+            raise ValueError("OpenAI response must be a JSON object.")
+        return parsed
 
     def handle_message(
         self, user_message: str, *, history: Optional[Iterable[Dict[str, str]]] = None
     ) -> AICommandResult:
-        plan = self.call_openai(self.build_messages(user_message, history=history))
+        if len(user_message) > self.max_message_length:
+            return AICommandResult(
+                False,
+                f"Messages must be {self.max_message_length} characters or fewer.",
+            )
+        try:
+            plan = self.call_openai(self.build_messages(user_message, history=history))
+        except Exception as exc:  # pragma: no cover - defensive catch for OpenAI issues
+            return AICommandResult(False, f"Failed to process AI response: {exc}")
+
         action = plan.get("action")
+        if not isinstance(action, str):
+            return AICommandResult(False, "AI response did not include a valid action.")
         arguments = plan.get("arguments", {})
+        if not isinstance(arguments, dict):
+            return AICommandResult(False, "AI response contained invalid arguments.")
 
         if action == "respond":
             return AICommandResult(True, plan.get("response_template", ""))
@@ -158,6 +184,12 @@ class AICommandRouter:
 
         if not resolved_path.exists() or not resolved_path.is_file():
             raise ValidationError("Requested file does not exist.")
+
+        size = resolved_path.stat().st_size
+        if size > self.max_file_size:
+            raise ValidationError(
+                "Requested file exceeds the maximum readable size for the assistant."
+            )
 
         content = resolved_path.read_text(encoding="utf-8")
         return {"path": str(resolved_path), "content": content}

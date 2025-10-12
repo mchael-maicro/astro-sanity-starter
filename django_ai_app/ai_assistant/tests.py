@@ -1,15 +1,30 @@
 from __future__ import annotations
 
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import Document
+from .services import AICommandRouter
 from .views import ChatView
 
 
-class DocumentAPITests(APITestCase):
+class AuthenticatedAPITestCase(APITestCase):
+    api_key = "unit-test-api-key"
+
+    def setUp(self) -> None:
+        super().setUp()
+        settings.AI_ASSISTANT_SETTINGS["API_KEY"] = self.api_key
+        self.client.credentials(HTTP_X_API_KEY=self.api_key)
+
+
+class DocumentAPITests(AuthenticatedAPITestCase):
     def test_create_and_retrieve_documents(self) -> None:
         create_response = self.client.post(
             reverse("document-list"),
@@ -57,3 +72,31 @@ class ChatViewHistoryTests(TestCase):
             self.view._normalise_history("invalid")
         with self.assertRaises(ValueError):
             self.view._normalise_history([{"role": "unknown", "content": "Hi"}])
+
+    def test_rejects_overlong_history(self) -> None:
+        history = [{"role": "user", "content": str(i)} for i in range(21)]
+        with self.assertRaises(ValueError):
+            self.view._normalise_history(history)
+
+
+class AICommandRouterSecurityTests(TestCase):
+    def setUp(self) -> None:
+        self.tempdir = TemporaryDirectory()
+        settings.AI_ASSISTANT_SETTINGS["FILE_ROOT"] = self.tempdir.name
+        settings.AI_ASSISTANT_SETTINGS["MAX_FILE_SIZE_BYTES"] = 8
+        settings.AI_ASSISTANT_SETTINGS["MAX_MESSAGE_LENGTH"] = 20
+        self.router = AICommandRouter(file_root=self.tempdir.name)
+
+    def tearDown(self) -> None:
+        self.tempdir.cleanup()
+
+    def test_rejects_messages_exceeding_limit(self) -> None:
+        result = self.router.handle_message("x" * 50)
+        self.assertFalse(result.success)
+        self.assertIn("Messages must be", result.message)
+
+    def test_prevents_large_file_reads(self) -> None:
+        file_path = Path(self.tempdir.name) / "data.txt"
+        file_path.write_text("0123456789", encoding="utf-8")
+        with self.assertRaises(ValidationError):
+            self.router._read_file({"path": "data.txt"})

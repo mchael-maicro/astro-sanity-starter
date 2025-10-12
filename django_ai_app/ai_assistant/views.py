@@ -17,12 +17,15 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    throttle_scope = "documents"
+    http_method_names = ["get", "post", "patch", "delete", "head", "options"]
 
 
 class ChatView(APIView):
     """API endpoint that translates chat messages into assistant actions."""
 
     router_class = AICommandRouter
+    throttle_scope = "chat"
 
     def __init__(self, **kwargs: object) -> None:
         super().__init__(**kwargs)
@@ -57,7 +60,9 @@ class ChatView(APIView):
         if not isinstance(history, list):
             raise ValueError("`history` must be a list of role/content dicts.")
         normalised: list[dict[str, str]] = []
-        for item in history:
+        for index, item in enumerate(history):
+            if index >= 20:
+                raise ValueError("`history` may contain at most 20 messages.")
             if not isinstance(item, dict):
                 raise ValueError("Each history item must be an object with `role` and `content` keys.")
             role = item.get("role")
