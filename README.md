@@ -114,3 +114,82 @@ Here are a few suggestions on what to do next if you're new to Netlify Visual Ed
 ## Support
 
 If you get stuck along the way, get help in our [support forums](https://answers.netlify.com/).
+
+## Django AI Assistant API
+
+This repository also contains a standalone Django project in `django_ai_app/` that exposes a REST API and AI-powered chat
+assistant capable of performing CRUD operations on knowledge base documents and reading files from the project.
+
+### Prerequisites
+
+- [Python](https://www.python.org/) 3.11+
+- An [OpenAI API key](https://platform.openai.com/)
+
+### Setup
+
+1. Create and activate a virtual environment (optional but recommended):
+
+   ```bash
+   cd django_ai_app
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Configure environment variables. The Django project reads standard Django settings plus the following:
+
+   ```bash
+   export OPENAI_API_KEY="sk-..."
+   export OPENAI_MODEL="gpt-4.1-mini"  # Optional, defaults to gpt-4.1-mini
+   ```
+
+4. Apply database migrations:
+
+   ```bash
+   python manage.py migrate
+   ```
+
+5. Run the development server:
+
+   ```bash
+   python manage.py runserver
+   ```
+
+The API will be available at `http://127.0.0.1:8000/api/`.
+
+### API Overview
+
+- `POST /api/chat/`: Sends a message to the AI assistant. The assistant will decide whether to respond directly, manage
+  documents, or read project files. Example payload:
+
+  ```json
+  {
+    "message": "Create a document titled Release Plan with bullet points from README",
+    "history": [
+      {"role": "user", "content": "List all documents"},
+      {"role": "assistant", "content": "Currently there are no documents."}
+    ]
+  }
+  ```
+
+- CRUD endpoints for documents are provided by the REST router:
+  - `GET /api/documents/`
+  - `POST /api/documents/`
+  - `GET /api/documents/{id}/`
+  - `PATCH /api/documents/{id}/`
+  - `DELETE /api/documents/{id}/`
+
+### Running Tests
+
+Inside `django_ai_app/` run:
+
+```bash
+python manage.py test
+```
+
+The included tests cover document CRUD endpoints and validation helpers used by the chat view.
