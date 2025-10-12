@@ -1,0 +1,234 @@
+---
+import Layout from '@layouts/Layout.astro';
+import PropertyCard from '@components/PropertyCard.astro';
+
+const properties = [
+    {
+        id: 'skyline-loft-riverbend',
+        name: 'Skyline Loft at Riverbend',
+        location: 'Pearl District · Portland, OR',
+        price: '$1,150,000',
+        tagline: 'For the design-obsessed entertainer who wants city lights with a splash of calm.',
+        highlights: ['3 bed + flex studio', '2.5 bath', '2,180 sq ft', 'Private roof terrace', 'Energy Star building'],
+        opinion:
+            "This loft is the sweet spot between industrial character and polished finish. The flow from kitchen to terrace is a host's dream, and the HOA actually invests in good community programming — rare in the Pearl.",
+        status: 'Urban Favorite',
+        metrics: [
+            { label: 'Walk Score', value: '92' },
+            { label: 'HOA Dues', value: '$410 / mo' },
+            { label: 'Days on Market', value: '6' },
+            { label: '5yr Appreciation', value: '↑ 4.8%' }
+        ],
+        image: {
+            src: 'https://images.unsplash.com/photo-1464146072230-91cabc968266?auto=format&fit=crop&w=1600&q=80',
+            alt: 'Modern loft living room with city skyline views'
+        }
+    },
+    {
+        id: 'sunlit-craftsman-brookline',
+        name: 'Sunlit Craftsman on Beaconsfield',
+        location: 'Brookline · Boston, MA',
+        price: '$1,025,000',
+        tagline: 'The porch swing + pantry combo that makes New England winters feel shorter.',
+        highlights: ['4 bedrooms', '3 bathrooms', 'Off-street parking', 'Chef pantry with window', 'Blue ribbon schools'],
+        opinion:
+            'This Craftsman keeps its soul—wood trim, original built-ins—but the renovation respected the proportions. The sunroom pulls double duty as an office with those east-facing windows.',
+        status: 'Family Pick',
+        metrics: [
+            { label: 'Commute to Copley', value: '18 min' },
+            { label: 'Lot Size', value: '4,900 sq ft' },
+            { label: 'Property Tax', value: '$9,870 / yr' },
+            { label: 'Resale Demand', value: 'High (A-)' }
+        ],
+        image: {
+            src: 'https://images.unsplash.com/photo-1600585154340-0ef3c08dcdb6?auto=format&fit=crop&w=1600&q=80',
+            alt: 'Craftsman style home with landscaped front yard'
+        }
+    },
+    {
+        id: 'mesa-ridge-sanctuary',
+        name: 'Mesa Ridge Sanctuary',
+        location: 'North Hills · Santa Fe, NM',
+        price: '$875,000',
+        tagline: 'Adobe minimalism with sunrise views for the artist who wants room to breathe.',
+        highlights: ['2 bedrooms + casita', '2.5 bathrooms', '1.6 acre lot', 'Passive solar design', 'Studio-ready casita'],
+        opinion:
+            'I love how the stucco warms up at golden hour. The casita has perfect proportions for a studio or income suite, and the xeriscaping means weekends are for hiking, not yard work.',
+        status: 'Desert Daydream',
+        metrics: [
+            { label: 'Elevation', value: '7,260 ft' },
+            { label: 'Cooling', value: 'Radiant + Evaporative' },
+            { label: 'Annual Utility Avg', value: '$1,540' },
+            { label: 'Trail Access', value: '7 min to Dale Ball' }
+        ],
+        image: {
+            src: 'https://images.unsplash.com/photo-1613977256644-1ecc70409f9f?auto=format&fit=crop&w=1600&q=80',
+            alt: 'Adobe style home overlooking desert landscape'
+        }
+    }
+];
+
+const buyingBeliefs = [
+    {
+        title: 'Comfort beats wow-factor photos',
+        description:
+            'Spaces that age gracefully come from honest materials and proportion. When a room invites deep breaths, you spend more time living there instead of constantly tweaking it.'
+    },
+    {
+        title: 'Neighborhood texture matters',
+        description:
+            'Soundscapes, coffee shops, and tree canopy all contribute to daily joy. I map these micro-experiences before suggesting an address because the vibe outside your door shapes everything.'
+    },
+    {
+        title: 'Flex rooms are future-proofing',
+        description:
+            'A pocket office today becomes a nursery or editing suite tomorrow. I prioritize floor plans with one space that can evolve as your life does.'
+    }
+];
+
+const marketSignals = [
+    {
+        label: 'Portland urban condos',
+        insight:
+            'Inventory is thin, but the well-run buildings are commanding premium resale values. HOA transparency is the differentiator—ask to see reserves before falling for exposed brick.'
+    },
+    {
+        label: 'Greater Boston single family',
+        insight:
+            'Buyers are recalibrating to interest rates by valuing turnkey mechanical systems. Homes with updated wiring and heating are skipping price reductions entirely.'
+    },
+    {
+        label: 'Santa Fe retreat market',
+        insight:
+            'Remote creatives are driving demand for casitas with separate entrances. Listings that photograph light-filled studios are getting multiple offers even in shoulder seasons.'
+    }
+];
+
+const conciergeTouches = [
+    'Walk-through videos with candid commentary before you ever board a plane.',
+    'Architect consults to stress-test renovation fantasies before you commit.',
+    'Neighborhood immersion itineraries so you can feel the rhythm of a place in 48 hours.'
+];
+---
+
+<Layout
+    title="Hearthside Atlas Realty"
+    description="Opinionated real estate matchmaking for people who want soul, sunlight, and well-edited floor plans."
+    addTitleSuffix={false}
+>
+    <main class="px-4 pb-24 pt-12 sm:px-6 lg:px-8">
+        <section class="mx-auto flex max-w-6xl flex-col gap-12 rounded-[2.5rem] bg-gradient-to-br from-secondary/60 via-base-100 to-accent/40 p-10 sm:p-16 lg:flex-row lg:items-center" id="hero">
+            <div class="flex-1 space-y-6">
+                <p class="inline-flex items-center gap-2 rounded-full bg-base-100/70 px-4 py-2 text-sm font-semibold text-primary shadow">
+                    Curated with a personal compass
+                </p>
+                <h1 class="text-4xl font-black leading-tight text-balance sm:text-5xl">
+                    Homes I would hand to my closest friends—because they simply feel right.
+                </h1>
+                <p class="max-w-2xl text-lg leading-relaxed text-base-content/80">
+                    I tour dozens of listings every month, but only a handful make my shortlist. Expect candid notes on light, layout, neighborhood quirks, and resale resilience—no sugar coating, just practical optimism.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a class="btn btn-primary" href="#contact">Plan a discovery call</a>
+                    <a class="btn btn-ghost" href="#properties">See my current crushes</a>
+                </div>
+            </div>
+            <div class="flex-1 space-y-6 rounded-3xl bg-base-100/80 p-6 shadow-xl">
+                <h2 class="text-xl font-semibold text-neutral">This month’s thesis</h2>
+                <p class="text-base leading-relaxed text-base-content/80">
+                    Sunlight, storage, and sound isolation are the unsung heroes of satisfaction. I lean toward homes that layer natural textures with clean mechanical systems—you deserve a space that inspires without nagging for maintenance every weekend.
+                </p>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="rounded-2xl border border-base-200/80 bg-base-100 p-4 text-center">
+                        <p class="text-3xl font-black text-primary">68%</p>
+                        <p class="mt-1 text-base-content/70">Clients choosing pre-inspected homes</p>
+                    </div>
+                    <div class="rounded-2xl border border-base-200/80 bg-base-100 p-4 text-center">
+                        <p class="text-3xl font-black text-primary">4.6⭐</p>
+                        <p class="mt-1 text-base-content/70">Average post-move satisfaction survey</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mx-auto mt-20 max-w-6xl" id="properties">
+            <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="text-sm font-semibold uppercase tracking-wider text-primary">Currently on my desk</p>
+                    <h2 class="text-3xl font-bold sm:text-4xl">Signature picks with honest commentary</h2>
+                </div>
+                <p class="max-w-xl text-base-content/70">
+                    Every property below earned an in-person walkthrough, sunlight audit, and noise check. If it’s listed here, I would gladly host a dinner party in it.
+                </p>
+            </header>
+            <div class="mt-10 grid gap-10 md:grid-cols-2">
+                {properties.map((property) => (
+                    <PropertyCard {...property} />
+                ))}
+            </div>
+        </section>
+
+        <section class="mx-auto mt-24 max-w-6xl rounded-[2.5rem] bg-base-100 p-10 shadow-xl" id="philosophy">
+            <div class="flex flex-col gap-8 lg:flex-row lg:items-start">
+                <div class="flex-1 space-y-4">
+                    <p class="text-sm font-semibold uppercase tracking-wider text-primary">Buying philosophy</p>
+                    <h2 class="text-3xl font-bold sm:text-4xl text-balance">How I decide a home is worthy of obsession</h2>
+                    <p class="text-base leading-relaxed text-base-content/80">
+                        Data is crucial, but feelings matter too. I balance spreadsheets with the intangible cues—how your footsteps sound on the floor, whether the morning light reaches your coffee nook, if the neighbors wave back. Here’s the framework I run through every single time.
+                    </p>
+                </div>
+                <div class="flex-1 space-y-6">
+                    {buyingBeliefs.map((belief) => (
+                        <div class="rounded-3xl border border-base-200/70 bg-base-100 p-6">
+                            <h3 class="text-xl font-semibold text-neutral">{belief.title}</h3>
+                            <p class="mt-2 text-base leading-relaxed text-base-content/75">{belief.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+        <section class="mx-auto mt-24 max-w-6xl" id="market">
+            <div class="rounded-[2.5rem] bg-gradient-to-br from-base-100 via-base-200/60 to-accent/40 p-10">
+                <div class="flex flex-col gap-8 lg:flex-row lg:items-center">
+                    <div class="flex-1 space-y-4">
+                        <p class="text-sm font-semibold uppercase tracking-wider text-primary">Market pulse</p>
+                        <h2 class="text-3xl font-bold sm:text-4xl text-balance">Where the smart money is watching</h2>
+                        <p class="text-base leading-relaxed text-base-content/80">
+                            I sift daily data, agent chatter, and neighborhood whispers. These are the signals shaping my guidance this quarter.
+                        </p>
+                    </div>
+                    <ul class="flex-1 space-y-4">
+                        {marketSignals.map((signal) => (
+                            <li class="rounded-3xl border border-base-200/70 bg-base-100 p-6 shadow-sm">
+                                <h3 class="text-lg font-semibold text-neutral">{signal.label}</h3>
+                                <p class="mt-2 text-base leading-relaxed text-base-content/75">{signal.insight}</p>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="mx-auto mt-24 max-w-5xl rounded-[2.5rem] bg-base-100 p-10 shadow-xl" id="contact">
+            <div class="space-y-6 text-center">
+                <p class="text-sm font-semibold uppercase tracking-wider text-primary">Work with me</p>
+                <h2 class="text-3xl font-bold sm:text-4xl text-balance">Let’s design a smart search together</h2>
+                <p class="mx-auto max-w-3xl text-base leading-relaxed text-base-content/80">
+                    Whether you are across town or flying in for a whirlwind tour, I’ll equip you with context, clarity, and a little courage. I limit active clients so every conversation feels like a strategy session with a friend who gets it.
+                </p>
+                <div class="grid gap-4 sm:grid-cols-3">
+                    {conciergeTouches.map((touch) => (
+                        <div class="rounded-3xl border border-base-200/60 bg-base-100 px-6 py-6 text-sm leading-relaxed text-base-content/80">
+                            {touch}
+                        </div>
+                    ))}
+                </div>
+                <div class="flex flex-wrap justify-center gap-4 pt-4">
+                    <a class="btn btn-primary" href="mailto:hello@hearthsideatlas.com">Email hello@hearthsideatlas.com</a>
+                    <a class="btn btn-outline" href="tel:+15550114578">Call (555) 011-4578</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</Layout>

@@ -1,4 +1,4 @@
-import { client } from '@utils/sanity-client';
+import { client, hasSanityCredentials } from '@utils/sanity-client';
 import { SECTIONS } from './blocks';
 
 const PAGE_QUERY_OBJ = `{
@@ -14,9 +14,27 @@ const PAGE_QUERY_OBJ = `{
 }`;
 
 export async function fetchData() {
-    return await client.fetch(`*[_type == "page"] ${PAGE_QUERY_OBJ}`);
+    if (!hasSanityCredentials) {
+        return [];
+    }
+
+    try {
+        return await client.fetch(`*[_type == "page"] ${PAGE_QUERY_OBJ}`);
+    } catch (error) {
+        console.warn('Falling back to an empty page collection because Sanity fetch failed.', error);
+        return [];
+    }
 }
 
 export async function getPageById(id) {
-    return await client.fetch(`*[_type == "page" && _id == "${id}"] ${PAGE_QUERY_OBJ}`);
+    if (!hasSanityCredentials) {
+        return [];
+    }
+
+    try {
+        return await client.fetch(`*[_type == "page" && _id == "${id}"] ${PAGE_QUERY_OBJ}`);
+    } catch (error) {
+        console.warn(`Falling back to an empty result for page ${id} because Sanity fetch failed.`, error);
+        return [];
+    }
 }

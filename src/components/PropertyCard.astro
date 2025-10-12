@@ -1,0 +1,62 @@
+---
+interface Metric {
+    label: string;
+    value: string;
+}
+
+interface PropertyCardProps {
+    id: string;
+    name: string;
+    location: string;
+    price: string;
+    tagline: string;
+    highlights: string[];
+    opinion: string;
+    status: string;
+    metrics: Metric[];
+    image: {
+        src: string;
+        alt: string;
+    };
+}
+
+const property: PropertyCardProps = Astro.props;
+---
+
+<article class="flex h-full flex-col overflow-hidden rounded-3xl border border-base-200/70 bg-base-100 shadow-lg transition duration-200 hover:-translate-y-1 hover:shadow-xl">
+    <div class="relative">
+        <img
+            class="h-56 w-full object-cover"
+            src={property.image.src}
+            alt={property.image.alt}
+            loading="lazy"
+        />
+        <span class="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-widest text-primary-content shadow">
+            {property.status}
+        </span>
+    </div>
+    <div class="flex flex-1 flex-col gap-6 p-8">
+        <div class="space-y-2">
+            <p class="text-sm font-semibold uppercase tracking-wide text-primary">{property.location}</p>
+            <h3 class="text-2xl font-bold text-balance">{property.name}</h3>
+            <p class="text-base-content/70">{property.tagline}</p>
+        </div>
+        <p class="text-lg font-semibold text-neutral">{property.price}</p>
+        <p class="text-base leading-relaxed text-base-content/80">{property.opinion}</p>
+        <ul class="flex flex-wrap gap-2 text-sm text-base-content/80">
+            {property.highlights.map((highlight) => (
+                <li class="rounded-full border border-base-200/70 bg-base-100/70 px-3 py-1">{highlight}</li>
+            ))}
+        </ul>
+        {property.metrics.length > 0 && (
+            <dl class="grid grid-cols-2 gap-4 text-sm text-base-content/70">
+                {property.metrics.map((metric) => (
+                    <div class="rounded-2xl bg-base-200/40 p-4">
+                        <dt class="text-xs uppercase tracking-wide text-base-content/60">{metric.label}</dt>
+                        <dd class="mt-1 text-lg font-semibold text-base-content">{metric.value}</dd>
+                    </div>
+                ))}
+            </dl>
+        )}
+    </div>
+</article>
