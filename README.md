@@ -118,7 +118,9 @@ If you get stuck along the way, get help in our [support forums](https://answers
 ## Django AI Assistant API
 
 This repository also contains a standalone Django project in `django_ai_app/` that exposes a REST API and AI-powered chat
-assistant capable of performing CRUD operations on knowledge base documents and reading files from the project.
+assistant named **Michael** capable of performing CRUD operations on knowledge base documents and reading files from the
+project. When the assistant responds directly to a user it introduces itself as Michael and includes the greeting
+“How can I assist you today?”.
 
 ### Prerequisites
 
